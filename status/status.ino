@@ -23,9 +23,9 @@
 // Ein-/Ausgänge Bezeichnen
 const int BTN_ON = 2;  // Einschalter
 const int BTN_OFF = 3; // Ausschalter
-const int LED_G = 7;   // grüne LED
+const int LED_G = 9;   // grüne LED
 const int LED_Y = 8;   // gelbe LED
-const int LED_R = 9;   // rote LED
+const int LED_R = 7;   // rote LED
 
 // hier wird der aktuelle Zustand gespeichert
 byte state = STATE_OFF;
