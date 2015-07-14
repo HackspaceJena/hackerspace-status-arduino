@@ -102,7 +102,12 @@ void loop() {
   }
 
   // aktuellen Zustand auf die Serielle Verbindung schreiben
-  Serial.print((state == STATE_ON || state == STATE_HALF));
+  if (state == STATE_ON || state == STATE_HALF) {
+      Serial.print("1");
+  } else {
+      Serial.print("0");
+  }
+  delay(10);
 }
 
 // Debouncer Klasse
