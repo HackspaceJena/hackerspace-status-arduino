@@ -22,33 +22,18 @@
 
 // Ein-/Ausgänge Bezeichnen
 const int BTN_ON = 2;  // Einschalter
+#define INTERRUPT_NAME_BTN_ON 0
 const int BTN_OFF = 3; // Ausschalter
+#define INTERRUPT_NAME_BTN_OFF 1
 const int LED_G = 9;   // grüne LED
 const int LED_Y = 8;   // gelbe LED
 const int LED_R = 7;   // rote LED
 
 // hier wird der aktuelle Zustand gespeichert
-byte state = STATE_OFF;
+volatile byte state = STATE_OFF;
 
 // hier wird der Beginn des aktuellen Zustand gespeichert in Millisekunden nach Uptime.
-unsigned long stateBegan;
-
-// Debouncer
-class Debounce
-{
-  public:
-    Debounce(int pin);
-    boolean update();
-    int read();
-  private:
-    int _pin;
-    int _state;
-    int _time;
-    int _delay;
-};
-
-Debounce debounceBtnOn(BTN_ON);
-Debounce debounceBtnOff(BTN_OFF);
+volatile unsigned long stateBegan;
 
 // wird einmalig beim Start des Arduinos ausgeführt
 void setup() {
@@ -57,6 +42,8 @@ void setup() {
   pinMode(LED_R, OUTPUT);
   Serial.begin(9600);
   setStateOnLeds();
+  attachInterrupt(INTERRUPT_NAME_BTN_ON, buttonOnPressed, RISING);
+  attachInterrupt(INTERRUPT_NAME_BTN_OFF, buttonOffPressed, RISING);
 }
 
 // bildet den aktuellen Zustand auf die LEDs ab
@@ -77,18 +64,7 @@ unsigned long calcStateTime() {
 
 // wird nach dem Starten dauerhaft ausgeführt
 void loop() {  
-  // Einschalter auslesen
-  if (debounceBtnOn.update() && debounceBtnOn.read()) {
-    state = STATE_ON;
-    stateBegan = millis();
-    setStateOnLeds();
-  }
-  // Ausschalter auslesen
-  if (debounceBtnOff.update() && debounceBtnOff.read()) {
-    state = STATE_OFF;
-    setStateOnLeds();
-  }
-
+  setStateOnLeds();
   // Auswertung des aktuellen Zustandes
   // ggf Zustand wechseln
   if (state == STATE_ON) {
@@ -110,28 +86,11 @@ void loop() {
   delay(10);
 }
 
-// Debouncer Klasse
-Debounce::Debounce(int pin)
-{
-  pinMode(pin, INPUT);
-  this->_pin = pin;
-  this->_time = 0;
-  this->_state = LOW;
-  this->_delay = 50;
+void buttonOnPressed() {
+  state = STATE_OM;
+  stateBegan = millis();
 }
-boolean Debounce::update()
-{
-  if (millis() - this->_time >= this->_delay) {
-    int reading = digitalRead(this->_pin);
-    if (reading != this->_state) {
-      this->_time = millis();
-      this->_state = reading;
-      return true;
-    }
-  }
-  return false;
-}
-int Debounce::read()
-{
-  return this->_state;
+
+void buttonOffPressed() {
+  state = STATE_OFF;
 }
