@@ -41,7 +41,6 @@ void setup() {
   pinMode(LED_Y, OUTPUT);
   pinMode(LED_R, OUTPUT);
   Serial.begin(9600);
-  setStateOnLeds();
   attachInterrupt(INTERRUPT_NAME_BTN_ON, buttonOnPressed, RISING);
   attachInterrupt(INTERRUPT_NAME_BTN_OFF, buttonOffPressed, RISING);
 }
