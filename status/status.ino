@@ -83,6 +83,7 @@ boolean transition() {
   if (state_previous == STATE_OFF && state_current == STATE_ON) {
     digitalWrite(LED_R, LOW);
     digitalWrite(LED_G, HIGH);
+    Serial.println("ON");
     stateBegan = millis();
     return true;
   }
@@ -93,22 +94,26 @@ boolean transition() {
   if (state_previous == STATE_ON && state_current == STATE_HALF) {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_Y, HIGH);
+    Serial.println("HALF");
     return true;
   }
   if (state_previous == STATE_ON && state_current == STATE_OFF) {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_R, HIGH);
+    Serial.println("OFF");
     return true;
   }
   if (state_previous == STATE_HALF && state_current == STATE_OFF) {
     digitalWrite(LED_Y, LOW);
     digitalWrite(LED_R, HIGH);
+    Serial.println("OFF");
     return true;
   }
   if (state_previous == NULL && state_current == STATE_OFF) {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_Y, LOW);
     digitalWrite(LED_R, HIGH);
+    Serial.println("OFF");
     return true;
   }
   return false;
@@ -152,10 +157,6 @@ void loop() {
   } else if (state_current == STATE_HALF && calcStateTime() >= TIME_OFF) {
     changeStateTo(STATE_OFF);
   }
-
-  // kommunizieren
-  sendState();
-  delay(10);
 }
 
 // Debouncer Klasse
