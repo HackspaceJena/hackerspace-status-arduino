@@ -119,6 +119,23 @@ boolean transition() {
   return false;
 }
 
+void handleSerial() {
+  if (Serial.read() != -1) {
+    switch (state_current) {
+      case STATE_OFF:
+        Serial.println("OFF");
+        break;
+      case STATE_HALF:
+        Serial.println("HALF");
+        break;
+      case STATE_ON:
+        Serial.println("ON");
+    }
+    do {
+     delay(10);
+    } while (Serial.read() != -1);
+  }
+}
 
 unsigned long calcStateTime() {
   // Variablen überlauf von millis erkennen
@@ -149,6 +166,8 @@ void loop() {
   } else if (state_current == STATE_HALF && calcStateTime() >= TIME_OFF) {
     changeStateTo(STATE_OFF);
   }
+  // auf Eingaben auf der Serialenverbindung reagieren
+  handleSerial();
 }
 
 // Debouncer Klasse
