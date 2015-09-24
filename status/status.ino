@@ -56,7 +56,18 @@ void setup() {
   pinMode(LED_Y, OUTPUT);
   pinMode(LED_R, OUTPUT);
   Serial.begin(9600);
+  testLeds();
   setStateOnLeds();
+}
+
+// Schaltet alle LEDs nacheinander an
+void testLeds() {
+  digitalWrite(LED_R, HIGH);
+  delay(1000);
+  digitalWrite(LED_Y, HIGH);
+  delay(1000);
+  digitalWrite(LED_G, HIGH);
+  delay(1000);
 }
 
 // bildet den aktuellen Zustand auf die LEDs ab
