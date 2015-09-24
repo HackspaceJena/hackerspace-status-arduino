@@ -27,8 +27,9 @@ const int LED_G = 9;   // grüne LED
 const int LED_Y = 8;   // gelbe LED
 const int LED_R = 7;   // rote LED
 
-// hier wird der aktuelle Zustand gespeichert
-byte state = STATE_OFF;
+// hier wird der aktuelle und vorherige Zustand gespeichert
+byte state_current = NULL;
+byte state_previous = NULL;
 
 // hier wird der Beginn des aktuellen Zustand gespeichert in Millisekunden nach Uptime.
 unsigned long stateBegan;
@@ -57,7 +58,7 @@ void setup() {
   pinMode(LED_R, OUTPUT);
   Serial.begin(9600);
   testLeds();
-  setStateOnLeds();
+  changeStateTo(STATE_OFF);
 }
 
 // Schaltet alle LEDs nacheinander an
@@ -70,11 +71,56 @@ void testLeds() {
   delay(1000);
 }
 
-// bildet den aktuellen Zustand auf die LEDs ab
-void setStateOnLeds() {
-  digitalWrite(LED_R, (state == STATE_OFF));
-  digitalWrite(LED_Y, (state == STATE_HALF));
-  digitalWrite(LED_G, (state == STATE_ON));
+// wechselt zu neuen Zustand
+void changeStateTo(byte state_new) {
+  state_previous = state_current;
+  state_current = state_new;
+  transition();
+}
+
+// behandelt die Zustandübergänge
+boolean transition() {
+  if (state_previous == STATE_OFF && state_current == STATE_ON) {
+    digitalWrite(LED_R, LOW);
+    digitalWrite(LED_G, HIGH);
+    stateBegan = millis();
+    return true;
+  }
+  if (state_previous == STATE_ON && state_current == STATE_ON) { // STATE_ON ist reflexiv
+    stateBegan = millis();
+    return true;
+  }
+  if (state_previous == STATE_ON && state_current == STATE_HALF) {
+    digitalWrite(LED_G, LOW);
+    digitalWrite(LED_Y, HIGH);
+    return true;
+  }
+  if (state_previous == STATE_ON && state_current == STATE_OFF) {
+    digitalWrite(LED_G, LOW);
+    digitalWrite(LED_R, HIGH);
+    return true;
+  }
+  if (state_previous == STATE_HALF && state_current == STATE_OFF) {
+    digitalWrite(LED_Y, LOW);
+    digitalWrite(LED_R, HIGH);
+    return true;
+  }
+  if (state_previous == NULL && state_current == STATE_OFF) {
+    digitalWrite(LED_G, LOW);
+    digitalWrite(LED_Y, LOW);
+    digitalWrite(LED_R, HIGH);
+    return true;
+  }
+  return false;
+}
+
+// information über aktuellen Zustand auf die Serielle Verbindung schreiben
+void sendState() {
+  if (state_current == STATE_ON || state_current == STATE_HALF) {
+      Serial.print("1");
+  } else {
+      Serial.print("0");
+  }
 }
 
 unsigned long calcStateTime() {
@@ -90,34 +136,25 @@ unsigned long calcStateTime() {
 void loop() {  
   // Einschalter auslesen
   if (debounceBtnOn.update() && debounceBtnOn.read()) {
-    state = STATE_ON;
-    stateBegan = millis();
-    setStateOnLeds();
+    changeStateTo(STATE_ON);
   }
   // Ausschalter auslesen
   if (debounceBtnOff.update() && debounceBtnOff.read()) {
-    state = STATE_OFF;
-    setStateOnLeds();
+    changeStateTo(STATE_OFF);
   }
 
   // Auswertung des aktuellen Zustandes
   // ggf Zustand wechseln
-  if (state == STATE_ON) {
+  if (state_current == STATE_ON) {
     if (calcStateTime() >= TIME_HALF) {
-      state = STATE_HALF;
-      setStateOnLeds();
+      changeStateTo(STATE_HALF);
     }
-  } else if (state == STATE_HALF && calcStateTime() >= TIME_OFF) {
-    state = STATE_OFF;
-    setStateOnLeds();
+  } else if (state_current == STATE_HALF && calcStateTime() >= TIME_OFF) {
+    changeStateTo(STATE_OFF);
   }
 
-  // aktuellen Zustand auf die Serielle Verbindung schreiben
-  if (state == STATE_ON || state == STATE_HALF) {
-      Serial.print("1");
-  } else {
-      Serial.print("0");
-  }
+  // kommunizieren
+  sendState();
   delay(10);
 }
 
