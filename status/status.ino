@@ -83,7 +83,7 @@ boolean transition() {
   if (state_previous == STATE_OFF && state_current == STATE_ON) {
     digitalWrite(LED_R, LOW);
     digitalWrite(LED_G, HIGH);
-    Serial.println("ON");
+    Serial.print("ON\n");
     stateBegan = millis();
     return true;
   }
@@ -94,26 +94,26 @@ boolean transition() {
   if (state_previous == STATE_ON && state_current == STATE_HALF) {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_Y, HIGH);
-    Serial.println("HALF");
+    Serial.print("HALF\n");
     return true;
   }
   if (state_previous == STATE_ON && state_current == STATE_OFF) {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_R, HIGH);
-    Serial.println("OFF");
+    Serial.print("OFF\n");
     return true;
   }
   if (state_previous == STATE_HALF && state_current == STATE_OFF) {
     digitalWrite(LED_Y, LOW);
     digitalWrite(LED_R, HIGH);
-    Serial.println("OFF");
+    Serial.print("OFF\n");
     return true;
   }
   if (state_previous == NULL && state_current == STATE_OFF) {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_Y, LOW);
     digitalWrite(LED_R, HIGH);
-    Serial.println("OFF");
+    Serial.print("OFF\n");
     return true;
   }
   return false;
@@ -123,13 +123,13 @@ void handleSerial() {
   if (Serial.read() != -1) {
     switch (state_current) {
       case STATE_OFF:
-        Serial.println("OFF");
+        Serial.print("OFF\n");
         break;
       case STATE_HALF:
-        Serial.println("HALF");
+        Serial.print("HALF\n");
         break;
       case STATE_ON:
-        Serial.println("ON");
+        Serial.print("ON\n");
     }
     do {
      delay(10);
