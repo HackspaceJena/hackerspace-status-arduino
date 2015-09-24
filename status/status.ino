@@ -4,7 +4,7 @@
  * 1 - An, aber auf dem weg zu aus
  * 2 - An
  */
-#define STATE_OFF 0
+#define STATE_OFF 3
 #define STATE_HALF 1
 #define STATE_ON 2
 
