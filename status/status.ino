@@ -119,14 +119,6 @@ boolean transition() {
   return false;
 }
 
-// information über aktuellen Zustand auf die Serielle Verbindung schreiben
-void sendState() {
-  if (state_current == STATE_ON || state_current == STATE_HALF) {
-      Serial.print("1");
-  } else {
-      Serial.print("0");
-  }
-}
 
 unsigned long calcStateTime() {
   // Variablen überlauf von millis erkennen
