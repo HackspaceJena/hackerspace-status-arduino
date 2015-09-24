@@ -87,7 +87,7 @@ void loop() {
 }
 
 void buttonOnPressed() {
-  state = STATE_OM;
+  state = STATE_ON;
   stateBegan = millis();
 }
 
