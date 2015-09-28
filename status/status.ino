@@ -105,6 +105,12 @@ boolean transition() {
     digitalWrite(LED_R, HIGH);
     return true;
   }
+  if (state_previous == STATE_HALF && state_current == STATE_ON) {
+    digitalWrite(LED_Y, LOW);
+    digitalWrite(LED_G, HIGH);
+    stateBegan = millis();
+    return true;
+  }
   if (state_previous == NULL && state_current == STATE_OFF) {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_Y, LOW);
