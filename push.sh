@@ -10,7 +10,7 @@ fi
 
 while true; do
 	if [ -c	 "$DEV" ]; then
-		read state < "$DEV"
+		read -r state < "$DEV"
 		case "$state" in
 			ON|HALF|OFF)
 				run-parts --arg="$state" "$DIR"
