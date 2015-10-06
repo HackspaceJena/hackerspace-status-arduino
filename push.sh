@@ -4,7 +4,7 @@ DEV='/dev/ttyUSB0'
 DIR='push.d'
 stty -F "$DEV" 9600 -brkint -icrnl -imaxbel -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke
 
-if [ -c	 "$DEV" ]; then
+if [ -c "$DEV" ]; then
 	sleep 2 && echo '?' >> "$DEV" &
 fi
 
