@@ -13,9 +13,7 @@ while true; do
 		read state < "$DEV"
 		case "$state" in
 			ON|HALF|OFF)
-				for f in $(find -O3 -P "$DIR" -type f -executable | sort -n); do
-					"$f" "$state" || echo "File $f exited with error $?"
-				done
+				run-parts --arg="$state" "$DIR"
 			;;
 		esac
 	else
