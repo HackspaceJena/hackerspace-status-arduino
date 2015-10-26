@@ -35,14 +35,18 @@ volatile byte state = STATE_OFF;
 // hier wird der Beginn des aktuellen Zustand gespeichert in Millisekunden nach Uptime.
 volatile unsigned long stateBegan;
 
+const long debouncing_time = 50; //Debouncing Time in Milliseconds
+volatile unsigned long last_buttonOnPressed;
+volatile unsigned long last_buttonOffPressed;
+
 // wird einmalig beim Start des Arduinos ausgeführt
 void setup() {
   pinMode(LED_G, OUTPUT);
   pinMode(LED_Y, OUTPUT);
   pinMode(LED_R, OUTPUT);
   Serial.begin(9600);
-  attachInterrupt(INTERRUPT_NAME_BTN_ON, buttonOnPressed, RISING);
-  attachInterrupt(INTERRUPT_NAME_BTN_OFF, buttonOffPressed, RISING);
+  attachInterrupt(INTERRUPT_NAME_BTN_ON, buttonOnPressedDebounce, RISING);
+  attachInterrupt(INTERRUPT_NAME_BTN_OFF, buttonOffPressedDebounce, RISING);
 }
 
 // bildet den aktuellen Zustand auf die LEDs ab
@@ -85,9 +89,23 @@ void loop() {
   delay(10);
 }
 
+void buttonOnPressedDebounce() {
+  if (millis() - last_buttonOnPressed >= debouncing_time) {
+    buttonOnPressed();
+    last_buttonOnPressed = millis();
+  }
+}
+
 void buttonOnPressed() {
   state = STATE_ON;
   stateBegan = millis();
+}
+
+void buttonOffPressedDebounce() {
+  if (millis() - last_buttonOffPressed >= debouncing_time) {
+    buttonOffPressed();
+    last_buttonOffPressed = millis();
+  }
 }
 
 void buttonOffPressed() {
