@@ -83,7 +83,7 @@ boolean transition() {
   if (state_previous == STATE_OFF && state_current == STATE_ON) {
     digitalWrite(LED_R, LOW);
     digitalWrite(LED_G, HIGH);
-    Serial.print("ON\n");
+    printState(state_current);
     stateBegan = millis();
     return true;
   }
@@ -94,19 +94,19 @@ boolean transition() {
   if (state_previous == STATE_ON && state_current == STATE_HALF) {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_Y, HIGH);
-    Serial.print("HALF\n");
+    printState(state_current);
     return true;
   }
   if (state_previous == STATE_ON && state_current == STATE_OFF) {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_R, HIGH);
-    Serial.print("OFF\n");
+    printState(state_current);
     return true;
   }
   if (state_previous == STATE_HALF && state_current == STATE_OFF) {
     digitalWrite(LED_Y, LOW);
     digitalWrite(LED_R, HIGH);
-    Serial.print("OFF\n");
+    printState(state_current);
     return true;
   }
   if (state_previous == STATE_HALF && state_current == STATE_ON) {
@@ -119,24 +119,29 @@ boolean transition() {
     digitalWrite(LED_G, LOW);
     digitalWrite(LED_Y, LOW);
     digitalWrite(LED_R, HIGH);
-    Serial.print("OFF\n");
+    printState(state_current);
     return true;
   }
   return false;
 }
 
+// schreibt den aktuellen Zustand auf die Serialeverbindung
+void printState(byte state) {
+  switch (state) {
+    case STATE_OFF:
+      Serial.print("OFF\n");
+      break;
+    case STATE_HALF:
+      Serial.print("HALF\n");
+      break;
+    case STATE_ON:
+      Serial.print("ON\n");
+  }
+}
+
 void handleSerial() {
   if (Serial.read() != -1) {
-    switch (state_current) {
-      case STATE_OFF:
-        Serial.print("OFF\n");
-        break;
-      case STATE_HALF:
-        Serial.print("HALF\n");
-        break;
-      case STATE_ON:
-        Serial.print("ON\n");
-    }
+    printState(state_current);
     do {
      delay(10);
     } while (Serial.read() != -1);
