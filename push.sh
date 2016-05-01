@@ -5,7 +5,7 @@ DIR='push.d'
 stty -F "$DEV" 9600 -brkint -icrnl -imaxbel -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke
 
 # Warte bis Device $DEV vorhanden ist
-while [ ! -c "$DEV" ]; then
+while [ ! -c "$DEV" ]; do
 	sleep 2
 done
 # sende beliebiges Zeichen an $DEV
