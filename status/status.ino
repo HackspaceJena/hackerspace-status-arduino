@@ -1,3 +1,4 @@
+#include <limits.h>
 /*
  * es gibt folgende Zustände:
  * 0 - Aus
@@ -16,9 +17,6 @@
  */
 #define TIME_HALF 5400000 // 1,5h
 #define TIME_OFF 7200000 // 2h
-
-// für Variablen Überlauf in calcStateTime
-#define MAX_LONG 4294967295
 
 // Ein-/Ausgänge Bezeichnen
 const int BTN_ON = 2;  // Einschalter
@@ -134,7 +132,7 @@ unsigned long calcStateTime() {
   if (millis() - stateBegan >= 0) {
     return millis() - stateBegan;
   } else {
-    return millis() + (MAX_LONG - stateBegan);
+    return millis() + (ULONG_MAX - stateBegan);
   }
 }
 
