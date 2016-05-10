@@ -1,13 +1,23 @@
-#include <limits.h>
+#include <cstddef>
+#include <climits>
+#include "Arduino.h"
+
+void setup();
+void testLeds();
+void loop();
+void changeStateTo(char state_new);
+bool transition();
+void sendState();
+unsigned long calcStateTime();
 /*
  * es gibt folgende Zustände:
  * 0 - Aus
  * 1 - An, aber auf dem weg zu aus
  * 2 - An
  */
-#define STATE_OFF 3
-#define STATE_HALF 1
-#define STATE_ON 2
+constexpr char STATE_OFF = 3;
+constexpr char STATE_HALF = 1;
+constexpr char STATE_ON = 2;
 
 /*
  * Zeit wie lange in einem Zustände verharrt werden soll
@@ -15,19 +25,19 @@
  * TIME_HALF - Zeitspanne von Zustand 2 bis Wechsel zu Zustand 1
  * TIME_OFF  - Zeitspanne von Zustand 2 bis Wechsel zu Zustand 0
  */
-#define TIME_HALF 5400000 // 1,5h
-#define TIME_OFF 7200000 // 2h
+constexpr int TIME_HALF = 5400000; // 1,5h
+constexpr int TIME_OFF = 7200000; // 2h
 
 // Ein-/Ausgänge Bezeichnen
-const int BTN_ON = 2;  // Einschalter
-const int BTN_OFF = 3; // Ausschalter
-const int LED_G = 9;   // grüne LED
-const int LED_Y = 8;   // gelbe LED
-const int LED_R = 7;   // rote LED
+constexpr int BTN_ON = 2;  // Einschalter
+constexpr int BTN_OFF = 3; // Ausschalter
+constexpr int LED_G = 9;   // grüne LED
+constexpr int LED_Y = 8;   // gelbe LED
+constexpr int LED_R = 7;   // rote LED
 
 // hier wird der aktuelle und vorherige Zustand gespeichert
-byte state_current = NULL;
-byte state_previous = NULL;
+char state_current = STATE_OFF;
+char state_previous = STATE_OFF;
 
 // hier wird der Beginn des aktuellen Zustand gespeichert in Millisekunden nach Uptime.
 unsigned long stateBegan;
@@ -37,7 +47,7 @@ class Debounce
 {
   public:
     Debounce(int pin);
-    boolean update();
+    bool update();
     int read();
   private:
     int _pin;
@@ -70,14 +80,14 @@ void testLeds() {
 }
 
 // wechselt zu neuen Zustand
-void changeStateTo(byte state_new) {
+void changeStateTo(char state_new) {
   state_previous = state_current;
   state_current = state_new;
   transition();
 }
 
 // behandelt die Zustandübergänge
-boolean transition() {
+bool transition() {
   if (state_previous == STATE_OFF && state_current == STATE_ON) {
     digitalWrite(LED_R, LOW);
     digitalWrite(LED_G, HIGH);
@@ -172,7 +182,7 @@ Debounce::Debounce(int pin)
   this->_state = LOW;
   this->_delay = 50;
 }
-boolean Debounce::update()
+bool Debounce::update()
 {
   if (millis() - this->_time >= this->_delay) {
     int reading = digitalRead(this->_pin);
