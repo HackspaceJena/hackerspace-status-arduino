@@ -129,11 +129,12 @@ void sendState() {
 
 unsigned long calcStateTime() {
   // Variablen überlauf von millis erkennen
-  if (millis() - stateBegan >= 0) {
-    return millis() - stateBegan;
-  } else {
-    return millis() + (ULONG_MAX - stateBegan);
+  unsigned long current_uptime = millis();
+  // kein überlauf
+  if (current_uptime > stateBegan) {
+    return current_uptime - stateBegan;
   }
+  return current_uptime + (ULONG_MAX - stateBegan);
 }
 
 // wird nach dem Starten dauerhaft ausgeführt
