@@ -1,4 +1,4 @@
 hackerspace-status-arduino
 ==========================
 
-see https://www.krautspace.de/hswiki:projekte:elektronikrunde:status_anzeige
+see https://kraut.space/hswiki:projekte:2014:raumstatus_anzeige
